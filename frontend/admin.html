@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="style">
+</head>
+
+<body>
+    <!-- system header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <h1>Issue Reporting System</h1>
+                <span>Welcome Admin</span>
+            </div>
+
+            <div class="user-section">
+                <p id="adminName"></p>
+                <button id="logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- main content -->
+    <main class="admin-container">
+        <div class="card-container">
+            <div class="card">
+                <h3>ทั้งหมด</h3>
+                <p id="totalCount">0</p>
+                <button class="showTableBtn" data-status="all">
+                    แสดงตาราง
+                </button>
+            </div>
+
+            <div class="card pending">
+                <h3>รอดำเนินการ</h3>
+                <p id="pendingCount">0</p>
+                <button class="showTableBtn" data-status="pending">
+                    แสดงตาราง
+                </button>
+            </div>
+
+            <div class="card progress">
+                <h3>กำลังดำเนินการ</h3>
+                <p id="progressCount">0</p>
+                <button class="showTableBtn" data-status="in_progress">
+                    แสดงตาราง
+                </button>
+            </div>
+
+            <div class="card success">
+                <h3>สำเร็จ</h3>
+                <p id="resolvedCount">0</p>
+                <button class="showTableBtn" data-status="resolved">
+                    แสดงตาราง
+                </button>
+            </div>
+        </div>
+
+        <div id="tableSection" style="display:none; margin-top:30px;">
+            <div id="tableError" class="alert d-none"></div>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>เรื่อง</th>
+                        <th>รูป</th>
+                        <th>รายละเอียด</th>
+                        <th>ประเภท</th>
+                        <th>สถานที่</th>
+                        <th>ผู้รายงาน</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+
+                <tbody id="body"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = "/project/api";
+
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        if (!token) {
+            window.location.href = "index";
+        }
+
+        if (role !== "admin") {
+            window.location.href = "user";
+        }
+
+        const logout = document.getElementById("logout");
+        const tableSection = document.getElementById("tableSection");
+        const tableBody = document.getElementById("body");
+        const tableError = document.getElementById("tableError");
+
+        let allReports = [];
+
+        const STATUS_LABELS = {
+            pending: {
+                text: "รอดำเนินการ",
+                className: "status-pending"
+            },
+            in_progress: {
+                text: "กำลังดำเนินการ",
+                className: "status-progress"
+            },
+            resolved: {
+                text: "สำเร็จ",
+                className: "status-success"
+            }
+        };
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, function (m) {
+                return {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;"
+                }[m];
+            });
+        }
+
+        function statusBadge(status) {
+            const info = STATUS_LABELS[status] || STATUS_LABELS.pending;
+
+            return `
+                <span class="${info.className}">
+                    ${info.text}
+                </span>
+            `;
+        }
+
+        function renderTable(status) {
+            const reports = status === "all"
+                ? allReports
+                : allReports.filter(r => r.status === status);
+
+            if (reports.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;">
+                            ไม่พบข้อมูล
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            tableBody.innerHTML = reports.map(report => `
+            <tr>
+                <td>${escapeHtml(report.title)}</td>
+                <td>
+                    ${report.image ?
+                        `<img
+                            src="/project/frontend/asset/image/${encodeURIComponent(report.image)}"
+                            width="100"
+                            onerror="this.src='asset/image/no-image.png';"
+                        >` : "-"
+                    }
+                </td>
+                <td>${escapeHtml(report.detail)}</td>
+                <td>${escapeHtml(report.type)}</td>
+                <td>${escapeHtml(report.location)}</td>
+                <td>${escapeHtml(report.reporter_name)}</td>
+                <td>${statusBadge(report.status)}</td>
+
+            </tr>
+            `).join("");
+        }
+
+        function updateCounts() {
+
+            document.getElementById("totalCount").textContent =
+                allReports.length;
+
+            document.getElementById("pendingCount").textContent =
+                allReports.filter(r => r.status === "pending").length;
+
+            document.getElementById("progressCount").textContent =
+                allReports.filter(r => r.status === "in_progress").length;
+
+            document.getElementById("resolvedCount").textContent =
+                allReports.filter(r => r.status === "resolved").length;
+        }
+
+        async function loadReports() {
+
+            try {
+
+                const response = await fetch(`${API_BASE}/reports`, {
+
+                    method: "GET",
+
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+
+                });
+
+                if (!response.ok) {
+                    throw new Error("โหลดข้อมูลไม่สำเร็จ");
+                }
+
+                const result = await response.json();
+
+                allReports = Array.isArray(result.data)
+                    ? result.data
+                    : [];
+
+                updateCounts();
+
+            } catch (error) {
+
+                console.error(error);
+
+                tableError.textContent = "ไม่สามารถโหลดข้อมูลได้";
+
+                tableError.classList.remove("d-none");
+            }
+
+        }
+
+        document.querySelectorAll(".showTableBtn").forEach(button => {
+
+            button.addEventListener("click", () => {
+
+                tableError.textContent = "";
+                tableError.classList.add("d-none");
+
+                const status = button.dataset.status;
+
+                if (
+                    tableSection.style.display === "block" &&
+                    tableSection.dataset.status === status
+                ) {
+
+                    tableSection.style.display = "none";
+                    tableSection.dataset.status = "";
+
+                    return;
+                }
+
+                tableSection.style.display = "block";
+                tableSection.dataset.status = status;
+
+                renderTable(status);
+
+            });
+
+        });
+
+        loadReports();
+
+        logout.addEventListener("click", async () => {
+            try {
+                const response = await fetch(`${API_BASE}/logout`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("role");
+                    window.location.href = "index";
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Logout ไม่สำเร็จ");
+            }
+        });
+    </script>
+</body>
+
+</html>

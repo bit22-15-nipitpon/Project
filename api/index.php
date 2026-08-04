@@ -1,6 +1,7 @@
 <?php
 require_once "config/Database.php";
 require_once "controllers/AuthController.php";
+require_once "controllers/ReportController.php";
 
 require_once "middlewares/AuthMiddleware.php";
 require_once "middlewares/RoleMiddleware.php";
@@ -16,10 +17,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 $db = (new Database())->connect();
 $routes = [
     'GET' => [
-
+        '/reports' => ['handle' => [ReportController::class, 'index']],
     ],
     'POST' => [
         '/login' => ['handle' => [AuthController::class, 'login']],
+        '/register' => ['handle' => [AuthController::class, 'create']],
         '/logout' => [
             'handle' => [AuthController::class, 'logout'],
             'middlewares' => ['Auth']

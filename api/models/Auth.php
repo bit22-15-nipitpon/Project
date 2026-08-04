@@ -19,19 +19,18 @@ class Auth {
         return $stmt;
     }
 
-    public function getToken($user, $pass) {
+    public function getToken($data) {
+        $user = $data['username'];
+        $pass = $data['password'];
+        $token = bin2hex(random_bytes(16));
+
         $sql = "SELECT * FROM {$this->table} WHERE username = ?";
         $result = $this->execute($sql, "s", $user)->fetch_assoc();
 
-        if (!$result) {
+        if (!$result || !password_verify($pass, $result['password'])) {
             return false;
         }
 
-        if (!password_verify($pass, $result['password'])) {
-            return false;
-        }
-
-        $token = bin2hex(random_bytes(16));
         $update = "UPDATE {$this->table} SET token = '$token' WHERE username = ?";
         $this->execute($update, "s", $user);
 
@@ -63,5 +62,43 @@ class Auth {
         $result = $stmt->get_result();
 
         return $result->fetch_assoc();
+    }
+
+    public function create($data) {
+        $username   = $this->conn->real_escape_string($data['username']);
+        $password   = password_hash($data['password'], PASSWORD_DEFAULT);
+        $email      = $this->conn->real_escape_string($data['email']);
+        $phone      = $this->conn->real_escape_string($data['phone']);
+
+        $token = bin2hex(random_bytes(16));
+
+        $sql = "INSERT INTO {$this->table}
+        (
+            username,
+            password,
+            email,
+            phone,
+            token
+        )
+        VALUES
+        (
+            '$username',
+            '$password',
+            '$email',
+            '$phone',
+            '$token'
+        )";
+
+        if ($this->conn->query($sql)) {
+            return [
+                "success" => true,
+                "message" => "User created successfully"
+            ];
+        }
+
+        return [
+            "success" => false,
+            "message" => $this->conn->error
+        ];
     }
 }

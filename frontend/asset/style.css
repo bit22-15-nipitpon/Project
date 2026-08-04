@@ -1,0 +1,576 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap');
+
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Sarabun', sans-serif;
+    background: #FFFBEA;
+    color: #3A2E14;
+}
+
+/* ==========================
+   Header — honeycomb motif
+========================== */
+.header {
+    position: relative;
+    background: #F5A623;
+    background-image:
+        radial-gradient(circle at 15% 50%, rgba(255, 255, 255, .18) 0, transparent 45%),
+        repeating-linear-gradient(120deg, transparent 0 26px, rgba(255, 255, 255, .07) 26px 27px),
+        repeating-linear-gradient(60deg, transparent 0 26px, rgba(255, 255, 255, .07) 26px 27px);
+    box-shadow: 0 6px 0 #C77800, 0 10px 25px rgba(58, 46, 20, .18);
+    padding: 18px 40px;
+    border-bottom: none;
+    overflow: hidden;
+}
+
+.header-container {
+    max-width: 100vw;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Logo */
+.logo-section h1 {
+    margin: 0;
+    color: #3A2E14;
+    font-family: 'Kanit', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.logo-section h1::before {
+    content: "⬡";
+    display: inline-block;
+    margin-right: 10px;
+    color: #FFFBEA;
+    text-shadow: 0 0 0 #3A2E14;
+    -webkit-text-stroke: 1.5px #3A2E14;
+    font-size: 22px;
+}
+
+/* Navigation */
+#nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#nav a {
+    text-decoration: none;
+    color: #3A2E14;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 10px 24px;
+    border-radius: 999px;
+    transition: .25s;
+}
+
+/* Login */
+#nav a:first-child {
+    background: transparent;
+    border: 2px solid #3A2E14;
+}
+
+#nav a:first-child:hover {
+    background: #3A2E14;
+    color: #FFD166;
+}
+
+/* Register */
+#nav a:last-child {
+    background: #3A2E14;
+    color: #FFD166;
+    box-shadow: 0 4px 0 #241C0D;
+}
+
+#nav a:last-child:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #241C0D;
+}
+
+/* Active Page */
+#nav a.active {
+    background: #3A2E14;
+    color: #FFD166;
+}
+
+/* ==========================
+   Table
+========================== */
+.table-header {
+        margin: 20px 3%;
+}
+
+.table-container {
+    background: #fff;
+    overflow-x: auto;
+    border-radius: 0 0 22px 22px;
+    box-shadow: 0 10px 30px rgba(58, 46, 20, .1);
+    margin: 0 24px 24px;
+}
+
+#logout {
+    padding: 10px 22px;
+    background-color: #C0392B;
+    color: #fff;
+    font-family: 'Kanit', sans-serif;
+    border: none;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+#logout:hover {
+    background-color: #A5301F;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(192, 57, 43, 0.3);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+thead {
+    background: #FFD166;
+    border-bottom: 3px solid #F5A623;
+}
+
+thead th {
+    color: #3A2E14;
+    font-family: 'Kanit', sans-serif;
+    padding: 16px;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+tbody td {
+    padding: 16px;
+    border-bottom: 1px solid #FBEFD1;
+    vertical-align: middle;
+    color: #4A3D1E;
+}
+
+tbody tr {
+    transition: .25s;
+}
+
+tbody tr:hover {
+    background: #FFF6DC;
+}
+
+/* Images */
+tbody img {
+    width: 100px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #FBEFD1;
+}
+
+/* Status — hex-tipped badges */
+.status-success,
+.status-progress,
+.status-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-success::before,
+.status-progress::before,
+.status-pending::before {
+    content: "⬡";
+    font-size: 11px;
+}
+
+.status-success {
+    background: #E7F4E8;
+    color: #2E7D32;
+}
+
+.status-progress {
+    background: #FFF3D6;
+    color: #B9770E;
+}
+
+.status-pending {
+    background: #FBE7E4;
+    color: #B33A2E;
+}
+
+/* Zebra */
+tbody tr:nth-child(even) {
+    background: #FFFCF3;
+}
+
+tbody tr:nth-child(even):hover {
+    background: #FFF6DC;
+}
+
+button:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+.container {
+    min-height: calc(100vh - 90px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+/* ==========================
+   Card
+========================== */
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 22px;
+    padding: 38px;
+    box-shadow: 0 18px 40px rgba(58, 46, 20, .14);
+    border-top: 5px solid #F5A623;
+    position: relative;
+    animation: fadeIn .4s ease;
+}
+
+.card h2 {
+    text-align: center;
+    margin: 0 0 30px;
+    color: #B9770E;
+    font-family: 'Kanit', sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+/* ==========================
+   Close Button
+========================== */
+#back {
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    transition: .3s;
+}
+
+#back:hover {
+    color: #B9770E;
+    transform: rotate(90deg);
+}
+
+/* ==========================
+   Form
+========================== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #3A2E14;
+}
+
+input {
+    width: 100%;
+    padding: 13px 15px;
+    border: 2px solid #F3E2B6;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Sarabun', sans-serif;
+    outline: none;
+    transition: .25s;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: #F5A623;
+    box-shadow: 0 0 0 4px rgba(245, 166, 35, .18);
+}
+
+/* Placeholder */
+input::placeholder {
+    color: #C9B584;
+}
+
+/* ==========================
+   Button
+========================== */
+#loginBtn,
+#registerBtn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px;
+    border: none;
+    border-radius: 999px;
+    background: #3A2E14;
+    color: #FFD166;
+    font-family: 'Kanit', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .25s;
+    box-shadow: 0 4px 0 #241C0D;
+}
+
+#loginBtn:hover,
+#registerBtn:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #241C0D;
+}
+
+#loginBtn:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+#loginBtn:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+/* ==========================
+   Register
+========================== */
+form p {
+    margin: 20px 0 0;
+    text-align: center;
+    color: #7A6A45;
+}
+
+form a {
+    color: #B9770E;
+    text-decoration: none;
+    font-weight: 600;
+    transition: .2s;
+}
+
+form a:hover {
+    color: #8A5807;
+    text-decoration: underline;
+}
+
+/* ==========================
+   Alert
+========================== */
+.alert {
+    display: none;
+    margin-bottom: 20px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    background: #FBE7E4;
+    color: #B33A2E;
+    border-left: 5px solid #C0392B;
+    font-size: 14px;
+}
+
+.alert:not(.d-none) {
+    display: block;
+}
+
+/* ==========================
+   Animation
+========================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#toggleFormBtn {
+    background-color: #3A2E14;
+    color: #FFD166;
+    font-family: 'Kanit', sans-serif;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin: 20px 0px 20px 100px;
+    width: 160px;
+}
+
+#toggleFormBtn:hover {
+    background-color: #241C0D;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(58, 46, 20, 0.25);
+}
+
+#toggleFormBtn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+#toggleFormBtn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, .3);
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(58, 46, 20, .12);
+}
+
+footer {
+    margin-top: auto;
+    background-color: #241C0D;
+    text-align: center;
+    padding: 20px 0;
+}
+
+footer p {
+    color: #FFD166;
+    padding: 4px;
+    font-family: 'Sarabun', sans-serif;
+}
+
+.admin-container {
+    width: 90%;
+    margin: 30px auto;
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+
+    .card {
+        background: #fff;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(58, 46, 20, .12);
+        text-align: center;
+        border-left: none;
+        border-top: 6px solid #F5A623;
+
+        button {
+            margin-top: 15px;
+            padding: 10px 18px;
+            width: 100%;
+            border: none;
+            border-radius: 999px;
+            background-color: #3A2E14;
+            color: #FFD166;
+            font-family: 'Kanit', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        button:hover {
+            background-color: #241C0D;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(58, 46, 20, 0.25);
+        }
+    }
+
+    .card h3 {
+        margin-bottom: 10px;
+        font-family: 'Kanit', sans-serif;
+    }
+
+    .card p {
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .pending {
+        border-top: 6px solid #C0392B;
+    }
+
+    .progress {
+        border-top: 6px solid #F5A623;
+    }
+
+    .success {
+        border-top: 6px solid #2E7D32;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .header {
+        padding: 16px 20px;
+    }
+
+    .header-container {
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .logo-section h1 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    #nav {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #nav a {
+        flex: 1;
+        text-align: center;
+    }
+
+    table {
+        overflow-x: hidden;
+    }
+
+    #toggleFormBtn {
+        display: block;
+        margin: 20px auto 0px auto;
+    }
+
+    .table-container {
+        border-radius: 16px;
+        margin: 20px 12px;
+    }
+}

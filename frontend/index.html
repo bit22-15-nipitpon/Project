@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <link rel="stylesheet" href="style">
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <h1>Issue Reporting System</h1>
+            </div>
+
+            <nav id="nav">
+                <a href="login">Login</a>
+                <a href="register">Register</a>
+            </nav>
+        </div>
+    </header>
+
+    <h1 class="table-header">ตัวอย่างงานที่ทำสำเร็จ</h1>
+    <div class="table-container">
+        <table>
+            <thead>
+                <th>เรื่อง</th>
+                <th>รูป</th>
+                <th>รายละเอียดงาน</th>
+                <th>ประเภทของงาน</th>
+                <th>สถานที่</th>
+                <th>ผู้รายงาน</th>
+                <th>สถานะ</th>
+            </thead>
+
+            <tbody id="body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById("menuBtn");
+        const nav = document.getElementById("nav");
+
+        data()
+
+        menuBtn.addEventListener("click", () => {
+            nav.classList.toggle("active");
+        });
+
+        async function data() {
+            const data = document.getElementById('body');
+            const respose = await fetch("http://10.26.56.25/project/api/reports", {
+                method: "GET",
+                redirect: "follow"
+            });
+
+            const result = await respose.json();
+            const resolvedReports = result.data.filter(report => report.status === "resolved");
+
+            body.innerHTML = "";
+
+            resolvedReports.forEach(report => {
+                const status = report.status === "resolved"
+                    ? `<span class="status-success">สำเร็จ</span>` : report.status === "in_progress"
+                        ? `<span class="status-progress">กำลังดำเนินการ</span>` : `<span class="status-pending">รอดำเนินการ</span>`;
+
+
+                body.innerHTML += `
+                    <tr>
+                        <td>${report.title}</td>
+                        <td>${report.image
+                        ? `<img src="/project/frontend/asset/image/${report.image}" width="100">` : "-"}
+                        </td>
+                        <td>${report.detail}</td>
+                        <td>${report.type}</td>
+                        <td>${report.location}</td>
+                        <td>${report.reporter_name}</td>
+                        <td>${status}</td>
+                    </tr >
+                `;
+            });
+        }
+    </script>
+</body>
+
+</html>

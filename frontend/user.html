@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Page</title>
+    <link rel="stylesheet" href="style">
+</head>
+
+<body>
+    <!-- system header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <h1>Issue Reporting System</h1>
+                        <span>Welcome User</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-section">
+                <button id="logout">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- main content -->
+    <button id="toggleFormBtn">Create Report</button>
+
+    <div class="container" id="reportCard">
+        <div class="card">
+            <h2>Create Report</h2>
+            <form id="reportForm" enctype="multipart/form-data">
+                <div>
+                    <label for="type_id">ประเภทของงาน</label>
+                    <select id="type_id" name="type_id" required>
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="title">เรื่อง</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+
+                <div>
+                    <label for="location">สถานที่</label>
+                    <input type="text" id="location" name="location" required>
+                </div>
+
+                <div>
+                    <label for="detail">รายละเอียดงาน</label>
+                    <textarea id="detail" name="detail" rows="5" required></textarea>
+                </div>
+
+                <div>
+                    <label for="image">รูป</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+
+                <button type="submit">Submit Report</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="user-table" border="1">
+            <thead>
+                <th>เรื่อง</th>
+                <th>รูป</th>
+                <th>รายละเอียดงาน</th>
+                <th>ประเภทของงาน</th>
+                <th>สถานที่</th>
+                <th>ผู้รายงาน</th>
+                <th>สถานะ</th>
+            </thead>
+
+            <tbody id="body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "index"
+        }
+
+        const toggleBtn = document.getElementById("toggleFormBtn");
+        const reportCard = document.getElementById("reportCard");
+        reportCard.style.display = "none";
+
+        data();
+
+        toggleBtn.addEventListener("click", () => {
+            if (toggleBtn.textContent != "Create Report") {
+                reportCard.style.display = "none";
+                toggleBtn.textContent = "Create Report";
+            } else {
+                reportCard.style.display = "";
+                toggleBtn.textContent = "Close";
+            }
+        });
+
+        const logout = document.getElementById('logout');
+        logout.addEventListener("click", () => {
+            const myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${token}`);
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                redirect: "follow"
+            };
+
+            fetch("http://10.26.56.25/project/api/logout", requestOptions)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result);
+
+                    if (result.success) {
+                        localStorage.removeItem("token");
+                        window.location.href = "index";
+                    }
+                })
+                .catch(error => console.error(error));
+        });
+
+        async function data() {
+            const body = document.getElementById("body");
+            const response = await fetch("http://10.26.56.25/project/api/reports", {
+                method: "GET",
+                redirect: "follow"
+            });
+            const result = await response.json();
+
+            body.innerHTML = "";
+
+            result.data.forEach(report => {
+                let status = "";
+
+                switch (report.status) {
+                    case "resolved":
+                        status = `<span class="status-success">สำเร็จ</span>`;
+                        break;
+                    case "in_progress":
+                        status = `<span class="status-progress">กำลังดำเนินการ</span>`;
+                        break;
+                    default:
+                        status = `<span class="status-pending">รอดำเนินการ</span>`;
+                }
+
+                body.innerHTML += `
+                    <tr>
+                        <td>${report.title}</td>
+                        <td>
+                            ${report.image ? `<img src="/project/frontend/asset/image/${report.image}" width="100">` : "-"}
+                        </td>
+                        <td>${report.detail}</td>
+                        <td>${report.type}</td>
+                        <td>${report.location}</td>
+                        <td>${report.reporter_name}</td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            });
+        }
+    </script>
+</body>
+
+</html>

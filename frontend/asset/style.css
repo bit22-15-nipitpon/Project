@@ -247,6 +247,10 @@ button:disabled {
     justify-content: center;
     align-items: center;
     padding: 40px 20px;
+
+    input[type="file"]::file-selector-button {
+        display: none;
+    }
 }
 
 /* ==========================
@@ -271,6 +275,58 @@ button:disabled {
     font-family: 'Kanit', sans-serif;
     font-size: 30px;
     font-weight: 700;
+}
+
+/* ==========================
+   Textarea
+========================== */
+textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 13px 15px;
+    border: 2px solid #E5E5E5;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+    color: #333;
+    background: #fff;
+    resize: vertical;
+    outline: none;
+    transition: .25s;
+    box-sizing: border-box;
+}
+
+textarea:focus {
+    border-color: #FFC107;
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, .2);
+}
+
+textarea::placeholder {
+    color: #aaa;
+}
+
+/* ==========================
+   Button
+========================== */
+button[type="submit"] {
+    width: 100%;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #FFD54F, #FFC107);
+    color: #333;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all .3s ease;
+    box-shadow: 0 6px 15px rgba(255, 193, 7, .25);
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(135deg, #FFC107, #F9A825);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 193, 7, .35);
 }
 
 /* ==========================

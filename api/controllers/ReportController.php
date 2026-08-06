@@ -36,16 +36,6 @@ class ReportController {
         $this->true($result);
     }
 
-    public function pending() {
-        $result = $this->table->getPending();
-
-        if (!$result) {
-            $this->false();
-        }
-
-        $this->true($result);
-    }
-
     public function progress($id) {
         $result = $this->table->inProgress($id);
 

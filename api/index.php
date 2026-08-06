@@ -18,11 +18,6 @@ $db = (new Database())->connect();
 $routes = [
     'GET' => [
         '/reports' => ['handle' => [ReportController::class, 'index'],],
-        '/pending' => [
-            'handle' => [ReportController::class, 'pending'],
-            'middlewares' => ['Auth']
-        ],
-        
     ],
     'POST' => [
         '/login' => ['handle' => [AuthController::class, 'login']],

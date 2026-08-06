@@ -17,7 +17,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 $db = (new Database())->connect();
 $routes = [
     'GET' => [
-        '/reports' => ['handle' => [ReportController::class, 'index']],
+        '/reports' => ['handle' => [ReportController::class, 'index'],],
+        '/pending' => [
+            'handle' => [ReportController::class, 'pending'],
+            'middlewares' => ['Auth']
+        ],
+        
     ],
     'POST' => [
         '/login' => ['handle' => [AuthController::class, 'login']],
@@ -27,6 +32,16 @@ $routes = [
             'middlewares' => ['Auth']
         ],
     ],
+    'PUT' => [
+        '/progress/{report_id}' => [
+            'handle' => [ReportController::class, 'progress'],
+            'middlewares' => ['staff']
+        ],
+        '/resolved/{report_id}' => [
+            'handle' => [ReportController::class, 'resolved'],
+            'middlewares' => ['staff']
+        ],
+    ]
 ];
 
 foreach($routes[$method] as $route => $config) {
@@ -37,6 +52,9 @@ foreach($routes[$method] as $route => $config) {
             }
             if ($mw === 'admin') {
                 RoleMiddleware::handle($db, "admin");
+            }
+            if ($mw === 'staff') {
+                RoleMiddleware::handle($db, "staff");
             }
         }
     }

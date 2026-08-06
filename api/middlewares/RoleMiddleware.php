@@ -8,7 +8,7 @@ class RoleMiddleware {
         if ($user['role'] !== $role) {
             http_response_code(403);
             echo json_encode([
-                "status" => false,
+                "success" => false,
                 "message" => "Access denied"
             ]);
             exit;

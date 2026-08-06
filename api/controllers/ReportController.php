@@ -35,4 +35,44 @@ class ReportController {
 
         $this->true($result);
     }
+
+    public function pending() {
+        $result = $this->table->getPending();
+
+        if (!$result) {
+            $this->false();
+        }
+
+        $this->true($result);
+    }
+
+    public function progress($id) {
+        $result = $this->table->inProgress($id);
+
+        if (isset($result['inProgress'])) {
+            http_response_code(404);
+            echo json_encode([
+                "success" => false,
+                "message" => "This report isn't pending"
+            ]);
+            return;
+        }
+
+        $this->true($result);
+    }
+
+    public function resolved($id) {
+        $result = $this->table->resolved($id);
+
+        if (!$result) {
+            http_response_code(404);
+            echo json_encode([
+                "success" => false,
+                "message" => "This report isn't progress"
+            ]);
+            return;
+        }
+
+        $this->true($result);
+    }
 }

@@ -153,13 +153,14 @@ class ReportController {
                 $image = uniqid('report_', true) . '.' . $extension;
 
                 // folder สำหรับเก็บรูป
-                $uploadDir = __DIR__ . '/../uploads/reports/';
+                $uploadDir ='D:/BIT32/xampp/htdocs/project/frontend/asset/image/';
 
+                // สร้าง folder ถ้ายังไม่มี
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0777, true);
                 }
 
-                // path เต็ม
+                // Path เต็มของไฟล์
                 $uploadPath = $uploadDir . $image;
 
                 // ย้ายไฟล์

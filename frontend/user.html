@@ -6,6 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
     <link rel="stylesheet" href="style">
+    <style>
+        #type_id {
+            width: 100%;
+            padding: 12px 14px;
+
+            border: 1px solid #e6d8bd;
+            border-radius: 12px;
+
+            background-color: #fffdf8;
+            color: #3f3526;
+
+            font-family: 'Kanit', sans-serif;
+            font-size: 15px;
+
+            outline: none;
+            cursor: pointer;
+
+            box-sizing: border-box;
+
+            transition: all 0.2s ease;
+        }
+
+        #type_id:hover {
+            border-color: #F5A623;
+        }
+
+        #type_id:focus {
+            border-color: #F5A623;
+            background-color: #fff;
+
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+        }
+    </style>
 </head>
 
 <body>
@@ -212,30 +245,55 @@
             });
 
             const reportForm = document.getElementById("reportForm");
+
             reportForm.addEventListener("submit", async function (e) {
                 e.preventDefault();
 
-                const formData = new FormData(reportForm);
+                const formdata = new FormData(reportForm);
 
                 try {
-                    const response = await fetch("http://10.26.56.25/project/api/reports", {
-                        method: "POST",
-                        headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
-                        body: formData
-                    });
+                    const response = await fetch(
+                        "http://10.26.56.25/project/api/create",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Authorization": "Bearer " + localStorage.getItem("token")
+                            },
+                            body: formdata
+                        }
+                    );
 
-                    const result = await response.json();
+                    // ดู HTTP status ก่อน
+                    console.log("HTTP Status:", response.status);
+                    console.log("Content-Type:", response.headers.get("content-type"));
 
-                    if (!response.ok) {
-                        alert(result.message || "เกิดข้อผิดพลาด");
+                    // อ่านเป็น text ก่อน เพื่อดู PHP error ได้
+                    const text = await response.text();
+
+                    console.log("API Response:", text);
+
+                    let result;
+
+                    try {
+                        result = JSON.parse(text);
+                    } catch (error) {
+                        console.error("Response ไม่ใช่ JSON:", text);
+
+                        alert("API ส่ง Response ที่ไม่ใช่ JSON");
                         return;
                     }
 
-                    alert("ส่งรายงานเรียบร้อยแล้ว");
-                    reportForm.reset();
+                    if (result.success) {
+                        alert("ส่งรายงานสำเร็จ");
+                        reportForm.reset();
+                    } else {
+                        alert(result.message || "เกิดข้อผิดพลาด");
+                    }
+
                 } catch (error) {
-                    console.error("Error:", error);
-                    alert("ไม่สามารถเชื่อมต่อ API ได้");
+                    console.error("FETCH ERROR:", error);
+
+                    alert("ไม่สามารถเชื่อมต่อ API ได้\n" + error.message);
                 }
             });
         }

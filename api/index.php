@@ -10,11 +10,18 @@ date_default_timezone_set('Asia/Bangkok');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 $request = str_replace('/project/api', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $method = $_SERVER['REQUEST_METHOD'];
 $db = (new Database())->connect();
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 $routes = [
     'GET' => [
         '/reports' => ['handle' => [ReportController::class, 'index'],],

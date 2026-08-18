@@ -18,13 +18,30 @@ class Report {
 
         while ($row = $data->fetch_assoc()) {
             $result[] = [
+                "id" => $row['report_id'],
+                "status" => $row['status'],
                 "image" => $row['image'],
                 "title" => $row['title'],
                 "detail" => $row['detail'],
                 "type" => $row['name'],
                 "location" => $row['location'],
-                "reporter_name" => $row['username'],
-                "status" => $row['status'],
+                "reporter_name" => $row['username']
+            ];
+        }
+
+        return $result;
+    }
+
+    public function getAllType() {
+        $result = [];
+        $data = $this->conn->query("
+            SELECT * FROM `report_type`
+        ");
+
+        while ($row = $data->fetch_assoc()) {
+            $result[] = [
+                "id" => $row['type_id'],
+                "type" => $row['name'],
             ];
         }
 
@@ -107,9 +124,33 @@ class Report {
             "type" => $result['name'],
             "location" => $result['location'],
             "reporter_name" => $result['username'],
-            "status" => 'resolved',
+            "status" => 'resolved'
         ];
     }
 
-    pub
+    public function create($data) {
+        $sql = "
+            INSERT INTO `reports`(`user_id`, `type_id`, `image`, `title`, `location`, `detail`, `report_date`, `updated_at`) 
+            VALUES (?,?,?,?,?,?,Now(),Now())
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param(
+            "iissss",
+            $data['user_id'],
+            $data['type_id'],
+            $data['image'],
+            $data['title'],
+            $data['location'],
+            $data['detail']
+        );
+
+        if (!$stmt->execute()) {
+            throw new Exception($stmt->error);
+        }
+
+        return [
+            'report_id' => $this->conn->insert_id
+        ];
+    }
 }

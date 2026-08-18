@@ -18,6 +18,7 @@ $db = (new Database())->connect();
 $routes = [
     'GET' => [
         '/reports' => ['handle' => [ReportController::class, 'index'],],
+        '/reports_type' => ['handle' => [ReportController::class, 'type'],],
     ],
     'POST' => [
         '/login' => ['handle' => [AuthController::class, 'login']],
@@ -25,6 +26,10 @@ $routes = [
         '/logout' => [
             'handle' => [AuthController::class, 'logout'],
             'middlewares' => ['Auth']
+        ],
+        '/create' => [
+            'handle' => [ReportController::class, 'create'],
+            'middlewares' => ['user']
         ],
     ],
     'PUT' => [
@@ -50,6 +55,9 @@ foreach($routes[$method] as $route => $config) {
             }
             if ($mw === 'staff') {
                 RoleMiddleware::handle($db, "staff");
+            }
+            if ($mw === 'user') {
+                RoleMiddleware::handle($db, "user");
             }
         }
     }

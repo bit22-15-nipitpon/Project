@@ -93,6 +93,7 @@
         reportCard.style.display = "none";
 
         data();
+        loadReportType();
 
         toggleBtn.addEventListener("click", () => {
             if (toggleBtn.textContent != "Create Report") {
@@ -128,6 +129,49 @@
                 .catch(error => console.error(error));
         });
 
+        // =========================
+        // Load Report Type
+        // =========================
+        async function loadReportType() {
+            const select = document.getElementById("type_id");
+            try {
+                const response = await fetch("http://10.26.56.25/project/api/reports_type", {
+                    method: "GET",
+                    redirect: "follow"
+                }
+                );
+
+                const result = await response.json();
+
+                // ล้าง option เดิม
+                select.innerHTML = "";
+
+                // option เริ่มต้น
+                const defaultOption = document.createElement("option");
+                defaultOption.value = "";
+                defaultOption.textContent = "-- เลือกประเภทของงาน --";
+                defaultOption.disabled = true;
+                defaultOption.selected = true;
+                select.appendChild(defaultOption);
+
+                // เพิ่มข้อมูลจาก API
+                result.data.forEach(item => {
+                    const option = document.createElement("option");
+
+                    option.value = item.id;
+                    option.textContent = item.type;
+
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error loading report type:", error);
+                select.appendChild(errorOption);
+            }
+        }
+
+        // =========================
+        // Load Table Data
+        // =========================
         async function data() {
             const body = document.getElementById("body");
             const response = await fetch("http://10.26.56.25/project/api/reports", {
@@ -165,6 +209,34 @@
                         <td>${status}</td>
                     </tr>
                 `;
+            });
+
+            const reportForm = document.getElementById("reportForm");
+            reportForm.addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const formData = new FormData(reportForm);
+
+                try {
+                    const response = await fetch("http://10.26.56.25/project/api/reports", {
+                        method: "POST",
+                        headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        alert(result.message || "เกิดข้อผิดพลาด");
+                        return;
+                    }
+
+                    alert("ส่งรายงานเรียบร้อยแล้ว");
+                    reportForm.reset();
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("ไม่สามารถเชื่อมต่อ API ได้");
+                }
             });
         }
     </script>

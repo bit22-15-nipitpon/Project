@@ -36,6 +36,16 @@ class ReportController {
         $this->true($result);
     }
 
+    public function type() {
+        $result = $this->table->getAllType();
+
+        if (!$result) {
+            $this->false();
+        }
+
+        $this->true($result);
+    }
+
     public function progress($id) {
         $result = $this->table->inProgress($id);
 
@@ -64,5 +74,133 @@ class ReportController {
         }
 
         $this->true($result);
+    }
+
+    public function create() {
+        header("Content-Type: application/json; charset=UTF-8");
+        try {
+            // 1. รับข้อมูลจาก FormData
+            $type_id  = $_POST['type_id'] ?? null;
+            $title    = $_POST['title'] ?? null;
+            $location = $_POST['location'] ?? null;
+            $detail   = $_POST['detail'] ?? null;
+
+
+            // 2. ตรวจสอบข้อมูล
+            if (
+                empty($type_id) ||
+                empty($title) ||
+                empty($location) ||
+                empty($detail)
+            ) {
+                http_response_code(400);
+                echo json_encode([
+                    "success" => false,
+                    "message" => "กรุณากรอกข้อมูลให้ครบ"
+                ], JSON_UNESCAPED_UNICODE);
+                return;
+            }
+
+            // 3. รับ user_id
+            $user = $_REQUEST['user'] ?? null;
+            $user_id = $user['user_id'];
+
+            if (!$user_id) {
+                http_response_code(401);
+
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Unauthorized"
+                ], JSON_UNESCAPED_UNICODE);
+
+                return;
+            }
+
+            // 4. จัดการรูป
+            $image = null;
+            if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+                    throw new Exception("Upload image failed");
+                }
+
+                // จำกัดขนาด 5 MB
+                if ($_FILES['image']['size'] > 5 * 1024 * 1024) {
+                    throw new Exception("รูปภาพต้องมีขนาดไม่เกิน 5 MB");
+                }
+
+                // ตรวจ MIME type
+                $allowedTypes = [
+                    'image/jpeg' => 'jpg',
+                    'image/png'  => 'png',
+                    'image/gif'  => 'gif',
+                    'image/webp' => 'webp'
+                ];
+
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+
+                $mime = $finfo->file(
+                    $_FILES['image']['tmp_name']
+                );
+
+                if (!isset($allowedTypes[$mime])) {
+                    throw new Exception(
+                        "รองรับเฉพาะ JPG, PNG, GIF และ WEBP"
+                    );
+                }
+
+                // สร้างชื่อไฟล์
+                $extension = $allowedTypes[$mime];
+                $image = uniqid('report_', true) . '.' . $extension;
+
+                // folder สำหรับเก็บรูป
+                $uploadDir = __DIR__ . '/../uploads/reports/';
+
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                // path เต็ม
+                $uploadPath = $uploadDir . $image;
+
+                // ย้ายไฟล์
+                if (
+                    !move_uploaded_file(
+                        $_FILES['image']['tmp_name'],
+                        $uploadPath
+                    )
+                ) {
+                    throw new Exception("ไม่สามารถบันทึกรูปภาพได้");
+                }
+            }
+
+            // 5. เตรียม Data
+            $data = [
+                'user_id'  => intval($user_id),
+                'type_id'  => intval($type_id),
+                'image'    => $image,
+                'title'    => trim($title),
+                'location' => trim($location),
+                'detail'   => trim($detail)
+            ];
+
+            // 6. Create Report
+            $report_id = $this->table->create($data);
+
+            // 7. Response
+            http_response_code(201);
+            echo json_encode([
+                "success" => true,
+                "message" => "สร้างรายงานสำเร็จ",
+                "data" => [
+                    "report_id" => $report_id['report_id']
+                ]
+            ], JSON_UNESCAPED_UNICODE);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                "success" => false,
+                "message" => $e->getMessage()
+            ], JSON_UNESCAPED_UNICODE);
+        }
     }
 }

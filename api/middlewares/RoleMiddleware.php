@@ -14,6 +14,7 @@ class RoleMiddleware {
             exit;
         }
 
+        $_REQUEST['user'] = $user;
         return $user;
     }
 }

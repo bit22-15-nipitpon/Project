@@ -100,7 +100,7 @@
     </div>
 
     <div class="table-container">
-        <table class="user-table" border="1">
+        <table>
             <thead>
                 <th>เรื่อง</th>
                 <th>รูป</th>
@@ -149,7 +149,7 @@
                 redirect: "follow"
             };
 
-            fetch("http://10.26.56.25/project/api/logout", requestOptions)
+            fetch("http://127.0.0.1/project/api/logout", requestOptions)
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);
@@ -168,7 +168,7 @@
         async function loadReportType() {
             const select = document.getElementById("type_id");
             try {
-                const response = await fetch("http://10.26.56.25/project/api/reports_type", {
+                const response = await fetch("http://127.0.0.1/project/api/reports_type", {
                     method: "GET",
                     redirect: "follow"
                 }
@@ -207,7 +207,7 @@
         // =========================
         async function data() {
             const body = document.getElementById("body");
-            const response = await fetch("http://10.26.56.25/project/api/reports", {
+            const response = await fetch("http://127.0.0.1/project/api/reports", {
                 method: "GET",
                 redirect: "follow"
             });
@@ -253,7 +253,7 @@
 
                 try {
                     const response = await fetch(
-                        "http://10.26.56.25/project/api/create",
+                        "http://127.0.0.1/project/api/create",
                         {
                             method: "POST",
                             headers: {

@@ -504,28 +504,7 @@ form a:hover {
 #toggleFormBtn:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(245, 166, 35, .3);
-}
-
-.user-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 4px 14px rgba(58, 46, 20, .12);
-}
-
-footer {
-    margin-top: auto;
-    background-color: #241C0D;
-    text-align: center;
-    padding: 20px 0;
-}
-
-footer p {
-    color: #FFD166;
-    padding: 4px;
-    font-family: 'Sarabun', sans-serif;
-}
+}git status
 
 .admin-container {
     width: 90%;

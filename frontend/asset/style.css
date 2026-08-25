@@ -504,7 +504,7 @@ form a:hover {
 #toggleFormBtn:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba(245, 166, 35, .3);
-}git status
+}
 
 .admin-container {
     width: 90%;

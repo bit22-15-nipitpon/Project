@@ -171,8 +171,7 @@
                 const response = await fetch("http://127.0.0.1/project/api/reports_type", {
                     method: "GET",
                     redirect: "follow"
-                }
-                );
+                });
 
                 const result = await response.json();
 
@@ -207,13 +206,28 @@
         // =========================
         async function data() {
             const body = document.getElementById("body");
-            const response = await fetch("http://127.0.0.1/project/api/reports", {
+            const response = await fetch("http://127.0.0.1/project/api/reports/user", {
                 method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                },
                 redirect: "follow"
             });
             const result = await response.json();
 
             body.innerHTML = "";
+
+            // ไม่มีข้อมูล
+            if (!result.data || result.data.length === 0) {
+                body.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center;">
+                            <p>เพิ่มรายงานแรก</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
             result.data.forEach(report => {
                 let status = "";

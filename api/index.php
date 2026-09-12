@@ -25,7 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $routes = [
     'GET' => [
         '/reports' => ['handle' => [ReportController::class, 'index'],],
-        '/reports_type' => ['handle' => [ReportController::class, 'type'],],
+        '/reports/user' => [
+            'handle' => [ReportController::class, 'show'],
+            'middlewares' => ['Auth']
+        ],
+        '/reports_type' => ['handle' => [ReportController::class, 'type']],
     ],
     'POST' => [
         '/login' => ['handle' => [AuthController::class, 'login']],
@@ -51,26 +55,26 @@ $routes = [
     ]
 ];
 
-foreach($routes[$method] as $route => $config) {
-    if(!empty($config['middlewares'])) {
-        foreach($config['middlewares'] as $mw) {
-            if($mw === "Auth") {
-                AuthMiddleware::handle($db);
-            }
-            if ($mw === 'admin') {
-                RoleMiddleware::handle($db, "admin");
-            }
-            if ($mw === 'staff') {
-                RoleMiddleware::handle($db, "staff");
-            }
-            if ($mw === 'user') {
-                RoleMiddleware::handle($db, "user");
-            }
-        }
-    }
-
+foreach ($routes[$method] as $route => $config) {
     $pattern = "#^" . preg_replace('/\{[a-zA-Z_]+\}/', '([^/]+)', $route) . "$#";
     if (preg_match($pattern, $request, $matches)) {
+        if (isset($config['middlewares'])) {
+            foreach ($config['middlewares'] as $mw) {
+                if ($mw === "Auth") {
+                    AuthMiddleware::handle($db);
+                }
+                if ($mw === 'admin') {
+                    RoleMiddleware::handle($db, "admin");
+                }
+                if ($mw === 'staff') {
+                    RoleMiddleware::handle($db, "staff");
+                }
+                if ($mw === 'user') {
+                    RoleMiddleware::handle($db, "user");
+                }
+            }
+        }
+
         [$class, $action] = $config['handle'];
         call_user_func_array([new $class($db), $action], array_slice($matches, 1));
         exit;

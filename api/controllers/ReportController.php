@@ -36,6 +36,17 @@ class ReportController {
         $this->true($result);
     }
 
+    public function show() {
+        $token = $_REQUEST["token"];
+        $result = $this->table->getById($token);
+
+        if (!$result) {
+            $this->false();
+        }
+
+        $this->true($result);
+    }
+
     public function type() {
         $result = $this->table->getAllType();
 
